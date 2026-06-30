@@ -183,7 +183,20 @@ Earth is further away from the Sun than Mars.
 
 O sistema deve corrigir automaticamente a afirmacao.
 
-## 8. Avaliacao da Resposta Final
+## 8. Metodos de Avaliacao do ADK
+
+O ADK fornece duas formas principais de avaliacao:
+
+- `Using a test file`: cria arquivos de teste individuais, em que cada arquivo
+  representa uma interacao simples entre agente e modelo dentro de uma sessao.
+- `Using an evalset file`: usa um dataset dedicado chamado `evalset` para
+  avaliar interacoes entre agente e modelo de forma mais organizada e
+  reutilizavel.
+
+Use arquivos de teste para cenarios pequenos e pontuais. Use `evalset` quando
+quiser manter varios casos de avaliacao em um conjunto estruturado.
+
+## 9. Avaliacao da Resposta Final
 
 Na etapa de avaliacao, o ADK compara a resposta gerada pelo agente com uma
 resposta de referencia definida no dataset de avaliacao.
@@ -192,7 +205,7 @@ A metrica `response_match_score` indica o quanto a resposta do agente correspond
 a resposta esperada. O teste passa quando o score atinge o valor minimo
 configurado e falha quando fica abaixo desse limite.
 
-## 9. Avaliacao de Trajetoria e Uso de Ferramentas
+## 10. Avaliacao de Trajetoria e Uso de Ferramentas
 
 O ADK tambem pode avaliar a trajetoria executada pelo agente, comparando valores
 esperados com valores reais das etapas realizadas durante a execucao.
@@ -219,7 +232,7 @@ Tipos comuns de avaliacao de trajetoria:
 - `Recall`: mede quantas acoes essenciais foram capturadas na previsao.
 - `Single-tool use`: verifica se uma acao ou ferramenta especifica foi usada.
 
-## 10. Finalizacao
+## 11. Finalizacao
 
 Depois de completar os passos:
 
