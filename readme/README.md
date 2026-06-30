@@ -78,10 +78,15 @@ export GOOGLE_GENAI_USE_VERTEXAI=TRUE
 export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)
 export GOOGLE_CLOUD_LOCATION=global
 export MODEL=gemini-3.5-flash
+export ADK_TRACE_TO_CLOUD=1
 ```
 
 O arquivo `.env` em `my_google_search_agent/` tambem pode ser usado pela UI e
 pelo CLI do ADK.
+
+Para habilitar tracing no Cloud Trace, adicione `ADK_TRACE_TO_CLOUD=1` ao
+arquivo `.env`. Em materiais antigos do lab, essa variavel pode aparecer como
+`AF_TRACE_TO_CLOUD=1`, mas a expectativa e migrar para `ADK_TRACE_TO_CLOUD=1`.
 
 ## 4. Executar a Web UI do ADK
 
