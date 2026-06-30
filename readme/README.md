@@ -183,7 +183,16 @@ Earth is further away from the Sun than Mars.
 
 O sistema deve corrigir automaticamente a afirmacao.
 
-## 8. Finalizacao
+## 8. Avaliacao da Resposta Final
+
+Na etapa de avaliacao, o ADK compara a resposta gerada pelo agente com uma
+resposta de referencia definida no dataset de avaliacao.
+
+A metrica `response_match_score` indica o quanto a resposta do agente corresponde
+a resposta esperada. O teste passa quando o score atinge o valor minimo
+configurado e falha quando fica abaixo desse limite.
+
+## 9. Finalizacao
 
 Depois de completar os passos:
 
