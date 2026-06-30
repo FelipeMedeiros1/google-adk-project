@@ -213,7 +213,23 @@ Cada caso de avaliacao pode ter um ou mais turnos de conversa. Depois de rodar a
 avaliacao, a UI mostra o resultado de cada caso, permitindo comparar o
 comportamento do agente antes e depois de mudancas.
 
-## 10. Avaliacao da Resposta Final
+## 10. Como Rodar Avaliacoes
+
+O ADK permite executar avaliacoes de tres formas principais:
+
+- `Web UI (adk web)`: avalia agentes interativamente pela interface web.
+- `Programmatically (pytest)`: integra avaliacoes ao pipeline de testes usando
+  `pytest` e arquivos de teste.
+- `Command Line Interface (adk eval)`: executa avaliacoes diretamente pelo
+  terminal usando um arquivo de conjunto de avaliacao existente.
+
+Exemplo pela linha de comando:
+
+```bash
+adk eval my_google_search_agent/__init__.py caminho/para/test.evalset.json
+```
+
+## 11. Avaliacao da Resposta Final
 
 Na etapa de avaliacao, o ADK compara a resposta gerada pelo agente com uma
 resposta de referencia definida no dataset de avaliacao.
@@ -222,7 +238,7 @@ A metrica `response_match_score` indica o quanto a resposta do agente correspond
 a resposta esperada. O teste passa quando o score atinge o valor minimo
 configurado e falha quando fica abaixo desse limite.
 
-## 11. Avaliacao de Trajetoria e Uso de Ferramentas
+## 12. Avaliacao de Trajetoria e Uso de Ferramentas
 
 O ADK tambem pode avaliar a trajetoria executada pelo agente, comparando valores
 esperados com valores reais das etapas realizadas durante a execucao.
@@ -249,7 +265,7 @@ Tipos comuns de avaliacao de trajetoria:
 - `Recall`: mede quantas acoes essenciais foram capturadas na previsao.
 - `Single-tool use`: verifica se uma acao ou ferramenta especifica foi usada.
 
-## 12. Finalizacao
+## 13. Finalizacao
 
 Depois de completar os passos:
 
