@@ -196,7 +196,24 @@ O ADK fornece duas formas principais de avaliacao:
 Use arquivos de teste para cenarios pequenos e pontuais. Use `evalset` quando
 quiser manter varios casos de avaliacao em um conjunto estruturado.
 
-## 9. Avaliacao da Resposta Final
+## 9. Aba Eval da Web UI
+
+A aba `Eval` da ADK Dev UI permite criar e executar avaliacoes diretamente pela
+interface web.
+
+Nessa aba, voce pode:
+
+- Criar um arquivo de conjunto de avaliacao (`eval set`).
+- Salvar a sessao atual como um caso de avaliacao.
+- Carregar sessoes salvas anteriormente e adiciona-las ao conjunto de avaliacao.
+- Executar avaliacoes, por exemplo depois de alterar ou criar uma nova versao do
+  agente.
+
+Cada caso de avaliacao pode ter um ou mais turnos de conversa. Depois de rodar a
+avaliacao, a UI mostra o resultado de cada caso, permitindo comparar o
+comportamento do agente antes e depois de mudancas.
+
+## 10. Avaliacao da Resposta Final
 
 Na etapa de avaliacao, o ADK compara a resposta gerada pelo agente com uma
 resposta de referencia definida no dataset de avaliacao.
@@ -205,7 +222,7 @@ A metrica `response_match_score` indica o quanto a resposta do agente correspond
 a resposta esperada. O teste passa quando o score atinge o valor minimo
 configurado e falha quando fica abaixo desse limite.
 
-## 10. Avaliacao de Trajetoria e Uso de Ferramentas
+## 11. Avaliacao de Trajetoria e Uso de Ferramentas
 
 O ADK tambem pode avaliar a trajetoria executada pelo agente, comparando valores
 esperados com valores reais das etapas realizadas durante a execucao.
@@ -232,7 +249,7 @@ Tipos comuns de avaliacao de trajetoria:
 - `Recall`: mede quantas acoes essenciais foram capturadas na previsao.
 - `Single-tool use`: verifica se uma acao ou ferramenta especifica foi usada.
 
-## 11. Finalizacao
+## 12. Finalizacao
 
 Depois de completar os passos:
 
