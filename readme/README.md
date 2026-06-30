@@ -223,6 +223,24 @@ O ADK permite executar avaliacoes de tres formas principais:
 - `Command Line Interface (adk eval)`: executa avaliacoes diretamente pelo
   terminal usando um arquivo de conjunto de avaliacao existente.
 
+Exemplo programatico com `pytest`:
+
+```python
+from google.adk.evaluation.agent_evaluator import AgentEvaluator
+
+
+def test_with_single_test_file():
+    """Testa a habilidade basica do agente usando um arquivo de sessao."""
+    AgentEvaluator.evaluate(
+        "tests.integration.fixture.home_automation_agent",
+        "tests/integration/fixture/home_automation_agent/simple_test.test.json",
+    )
+```
+
+Nesse formato, o teste chama `AgentEvaluator.evaluate(...)`, informa o modulo do
+agente e aponta para um arquivo `.test.json` que representa uma interacao de
+avaliacao.
+
 Exemplo pela linha de comando:
 
 ```bash
