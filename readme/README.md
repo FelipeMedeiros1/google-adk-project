@@ -44,13 +44,48 @@ tools=[google_search]
 `app_agent` funciona como uma ponte para importar e expor o `root_agent` do
 `my_google_search_agent`, ajudando o ADK a encontrar o agente corretamente.
 
+## Fluxo Basico do Agente
+
+O fluxo abaixo resume a trajetoria comum de uma interacao com agente no ADK:
+
+```text
+User Input
+    |
+    v
++---------+
+|  Agent  |
++---------+
+    |
+    v
++------------------+
+| Determine Intent |
++------------------+
+    |
+    v
++--------------+
+|    Tools     |
+| (Search/API) |
++--------------+
+    |
+    v
++----------------+
+| Process Result |
++----------------+
+    |
+    v
+Final Response
+```
+
+Esse fluxo tambem ajuda a entender a avaliacao de trajetoria, pois cada etapa
+pode ser comparada com o comportamento esperado do agente.
+
 ## 1. Clonar o Projeto
 
 No Cloud Shell:
 
 ```bash
 cd ~
-git clone https://github.com/FelipeMedeiros1/google-adk-project.git
+git clone https://github.com/Seu_Projeto/google-adk-project.git
 cd google-adk-project/adk_project
 ```
 
