@@ -208,6 +208,17 @@ A metrica `tool_trajectory_avg_score` representa o quanto a trajetoria real do
 agente corresponde a trajetoria esperada. O teste passa quando esse score atinge
 o valor minimo configurado e falha quando fica abaixo desse limite.
 
+Tipos comuns de avaliacao de trajetoria:
+
+- `Exact match`: exige uma correspondencia perfeita com a trajetoria ideal.
+- `In-order match`: exige as acoes corretas na ordem correta, permitindo acoes
+  extras.
+- `Any-order match`: exige as acoes corretas em qualquer ordem, permitindo
+  acoes extras.
+- `Precision`: mede a relevancia e a corretude das acoes previstas.
+- `Recall`: mede quantas acoes essenciais foram capturadas na previsao.
+- `Single-tool use`: verifica se uma acao ou ferramenta especifica foi usada.
+
 ## 10. Finalizacao
 
 Depois de completar os passos:
