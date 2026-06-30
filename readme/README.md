@@ -192,7 +192,23 @@ A metrica `response_match_score` indica o quanto a resposta do agente correspond
 a resposta esperada. O teste passa quando o score atinge o valor minimo
 configurado e falha quando fica abaixo desse limite.
 
-## 9. Finalizacao
+## 9. Avaliacao de Trajetoria e Uso de Ferramentas
+
+O ADK tambem pode avaliar a trajetoria executada pelo agente, comparando valores
+esperados com valores reais das etapas realizadas durante a execucao.
+
+Essa avaliacao pode verificar se o agente seguiu corretamente etapas como:
+
+- `determine_intent`
+- `use_tool`
+- `review_results`
+- `report_generation`
+
+A metrica `tool_trajectory_avg_score` representa o quanto a trajetoria real do
+agente corresponde a trajetoria esperada. O teste passa quando esse score atinge
+o valor minimo configurado e falha quando fica abaixo desse limite.
+
+## 10. Finalizacao
 
 Depois de completar os passos:
 
