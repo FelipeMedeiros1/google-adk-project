@@ -1,52 +1,54 @@
 # Google ADK Lab (GENAI104)
 
-Este projeto documenta o passo a passo para executar o laboratorio
+Este projeto documenta o passo a passo para executar o laboratório
 **Get Started with Agent Development Kit (ADK)** no Google Cloud/Qwiklabs.
 
 ## Objetivo
 
-Neste lab, voce aprende a:
+Neste laboratório, você aprende a:
 
-- Criar agentes com ADK.
-- Usar Web UI, CLI e execucao programatica.
-- Trabalhar com sessoes e Runner.
-- Utilizar ferramentas como Google Search.
-- Explorar uma arquitetura multi-agent.
+- Criar agentes com o ADK.
+- Usar a Web UI, a CLI e a execução programática.
+- Trabalhar com sessões e `Runner`.
+- Utilizar ferramentas como o Google Search.
+- Explorar uma arquitetura multiagente.
 
-## Pre-requisitos
+## Pré-requisitos
 
 - Conta Qwiklabs ativa.
 - Acesso ao Google Cloud Console.
 - Cloud Shell habilitado.
+- Navegador Chrome ou janela anônima/privada para evitar conflito com contas pessoais do Google Cloud.
 
 ## Estrutura do Projeto
 
 ```text
 google-adk-project/
-+-- app_agent/
-+-- my_google_search_agent/
 +-- adk_project/
-|   +-- app_agent/
-|   +-- my_google_search_agent/
 |   +-- adk_utils/
+|   +-- app_agent/
 |   +-- llm_auditor/
+|   +-- my_google_search_agent/
 |   +-- requirements.txt
++-- app_agent/
++-- llm_auditor/
++-- my_google_search_agent/
 +-- readme/
 ```
 
-`my_google_search_agent` e o agente principal. Ele cria um `root_agent` usando
-`google.adk.agents.Agent` e recebe a ferramenta `google_search`:
+O laboratório trabalha principalmente dentro de `adk_project/`. As pastas de agente na raiz são cópias auxiliares do mesmo código.
+
+`my_google_search_agent` é o agente principal. Ele cria um `root_agent` usando `google.adk.agents.Agent` e recebe a ferramenta `google_search`:
 
 ```python
 tools=[google_search]
 ```
 
-`app_agent` funciona como uma ponte para importar e expor o `root_agent` do
-`my_google_search_agent`, ajudando o ADK a encontrar o agente corretamente.
+`app_agent` executa o `root_agent` programaticamente usando `InMemoryRunner`.
 
-## Fluxo Basico do Agente
+## Fluxo Básico do Agente
 
-O fluxo abaixo resume a trajetoria comum de uma interacao com agente no ADK:
+O fluxo abaixo resume a trajetória comum de uma interação com um agente no ADK:
 
 ```text
 User Input
@@ -76,12 +78,21 @@ User Input
 Final Response
 ```
 
-Esse fluxo tambem ajuda a entender a avaliacao de trajetoria, pois cada etapa
-pode ser comparada com o comportamento esperado do agente.
+Esse fluxo também ajuda a entender a avaliação de trajetória, pois cada etapa pode ser comparada com o comportamento esperado do agente.
 
-## 1. Clonar o Projeto
+## 1. Obter o Código do Laboratório
 
-No Cloud Shell:
+No Cloud Shell, copie os arquivos fornecidos pelo Qwiklabs para o diretório inicial:
+
+```bash
+cd ~
+gcloud storage cp -r gs://SEU_BUCKET_DO_LAB/* .
+cd adk_project
+```
+
+Substitua `SEU_BUCKET_DO_LAB` pelo bucket exibido nas instruções do seu laboratório. Não salve credenciais temporárias do Qwiklabs no repositório.
+
+Se estiver usando este repositório em vez do bucket do laboratório:
 
 ```bash
 cd ~
@@ -89,7 +100,7 @@ git clone https://github.com/Seu_Projeto/google-adk-project.git
 cd google-adk-project/adk_project
 ```
 
-Se o repositorio ja existir, atualize:
+Se o repositório já existir, atualize:
 
 ```bash
 cd ~/google-adk-project
@@ -97,31 +108,40 @@ git pull
 cd adk_project
 ```
 
-## 2. Instalar Dependencias
+## 2. Instalar Dependências
 
 ```bash
 export PATH=$PATH:"/home/${USER}/.local/bin"
 
-python3 -m pip install google-adk[otel-gcp]==1.30.0
-python3 -m pip install -r requirements.txt
+python3 -m pip install google-adk[otel-gcp]==1.30.0 -r requirements.txt
 ```
 
-## 3. Configurar Variaveis de Ambiente
+## 3. Configurar Variáveis de Ambiente
+
+Para uso no terminal atual:
 
 ```bash
 export GOOGLE_GENAI_USE_VERTEXAI=TRUE
 export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)
 export GOOGLE_CLOUD_LOCATION=global
 export MODEL=gemini-3.5-flash
-export ADK_TRACE_TO_CLOUD=1
 ```
 
-O arquivo `.env` em `my_google_search_agent/` tambem pode ser usado pela UI e
-pelo CLI do ADK.
+Para a Web UI e a CLI do ADK, crie um arquivo `.env` dentro do diretório do agente:
 
-Para habilitar tracing no Cloud Trace, adicione `ADK_TRACE_TO_CLOUD=1` ao
-arquivo `.env`. Em materiais antigos do lab, essa variavel pode aparecer como
-`AF_TRACE_TO_CLOUD=1`, mas a expectativa e migrar para `ADK_TRACE_TO_CLOUD=1`.
+```bash
+cat << EOF > my_google_search_agent/.env
+GOOGLE_GENAI_USE_VERTEXAI=TRUE
+GOOGLE_CLOUD_PROJECT=$(gcloud config get-value project)
+GOOGLE_CLOUD_LOCATION=global
+MODEL=gemini-3.5-flash
+OTEL_SERVICE_NAME=adk-agent
+OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT=true
+EOF
+```
+
+Essas variáveis indicam que o agente deve usar o Vertex AI, associam as chamadas ao projeto do laboratório e configuram telemetria para o OpenTelemetry quando a Web UI for executada com `--otel_to_cloud`.
 
 ## 4. Executar a Web UI do ADK
 
@@ -130,6 +150,7 @@ Dentro de `google-adk-project/adk_project`, rode:
 ```bash
 adk web \
   --allow_origins "regex:https://.*\.cloudshell\.dev" \
+  --otel_to_cloud \
   --reload_agents
 ```
 
@@ -146,11 +167,11 @@ Na interface:
 3. Digite:
 
 ```text
-What is the capital of France?
+I know the Summer Olympics are happening in 2028, please tell me which countries are participating and what events will be held.
 ```
 
 4. Aguarde a resposta.
-5. Clique no icone do agente para inspecionar o evento.
+5. Clique no ícone do agente para inspecionar o evento e os metadados de grounding.
 
 Para parar a Web UI, volte ao terminal e pressione:
 
@@ -158,15 +179,15 @@ Para parar a Web UI, volte ao terminal e pressione:
 CTRL + C
 ```
 
-## 5. Execucao Programatica
+## 5. Execução Programática
 
 A partir de `google-adk-project/adk_project`, execute:
 
 ```bash
-PYTHONPATH=. python3 app_agent/agent.py
+python3 app_agent/agent.py
 ```
 
-Saida esperada:
+Saída esperada:
 
 ```text
 User says: What is the capital of France?
@@ -184,7 +205,7 @@ adk run my_google_search_agent
 Depois, interaja com o agente:
 
 ```text
-What are popular movies this year?
+What are some popular movies that have been released in India this year?
 ```
 
 Para encerrar:
@@ -206,7 +227,14 @@ Rode a interface novamente:
 ```bash
 adk web \
   --allow_origins "regex:https://.*\.cloudshell\.dev" \
+  --otel_to_cloud \
   --reload_agents
+```
+
+Se a porta `8000` ainda estiver ocupada, use outra porta:
+
+```bash
+adk web --port 8001
 ```
 
 Na UI, selecione:
@@ -218,123 +246,100 @@ llm_auditor
 Teste com:
 
 ```text
-Earth is further away from the Sun than Mars.
+Double check this: Earth is further away from the Sun than Mars.
 ```
 
-O sistema deve corrigir automaticamente a afirmacao.
+O sistema deve corrigir automaticamente a afirmação.
 
-## 8. Metodos de Avaliacao do ADK
+## 8. Métodos de Avaliação do ADK
 
-O ADK fornece duas formas principais de avaliacao:
+O ADK fornece formas de avaliação para verificar a resposta final e a trajetória executada pelo agente.
 
-- `Using a test file`: cria arquivos de teste individuais, em que cada arquivo
-  representa uma interacao simples entre agente e modelo dentro de uma sessao.
-- `Using an evalset file`: usa um dataset dedicado chamado `evalset` para
-  avaliar interacoes entre agente e modelo de forma mais organizada e
-  reutilizavel.
+- `Using a test file`: cria arquivos de teste individuais, em que cada arquivo representa uma interação simples entre agente e modelo dentro de uma sessão.
+- `Using an evalset file`: usa um conjunto de avaliação dedicado para avaliar interações entre agente e modelo de forma mais organizada e reutilizável.
 
-Use arquivos de teste para cenarios pequenos e pontuais. Use `evalset` quando
-quiser manter varios casos de avaliacao em um conjunto estruturado.
+Use arquivos de teste para cenários pequenos e pontuais. Use `evalset` quando quiser manter vários casos de avaliação em um conjunto estruturado.
 
 ## 9. Aba Eval da Web UI
 
-A aba `Eval` da ADK Dev UI permite criar e executar avaliacoes diretamente pela
-interface web.
+A aba `Eval` da ADK Dev UI permite criar e executar avaliações diretamente pela interface web.
 
-Nessa aba, voce pode:
+Nessa aba, você pode:
 
-- Criar um arquivo de conjunto de avaliacao (`eval set`).
-- Salvar a sessao atual como um caso de avaliacao.
-- Carregar sessoes salvas anteriormente e adiciona-las ao conjunto de avaliacao.
-- Executar avaliacoes, por exemplo depois de alterar ou criar uma nova versao do
-  agente.
+- Criar um conjunto de avaliação.
+- Salvar a sessão atual como um caso de avaliação.
+- Carregar sessões salvas anteriormente e adicioná-las ao conjunto de avaliação.
+- Executar avaliações depois de alterar ou criar uma nova versão do agente.
 
-Cada caso de avaliacao pode ter um ou mais turnos de conversa. Depois de rodar a
-avaliacao, a UI mostra o resultado de cada caso, permitindo comparar o
-comportamento do agente antes e depois de mudancas.
+Cada caso de avaliação pode ter um ou mais turnos de conversa. Depois de rodar a avaliação, a UI mostra o resultado de cada caso, permitindo comparar o comportamento do agente antes e depois de mudanças.
 
-## 10. Como Rodar Avaliacoes
+## 10. Como Rodar Avaliações
 
-O ADK permite executar avaliacoes de tres formas principais:
+O ADK permite executar avaliações de três formas principais:
 
 - `Web UI (adk web)`: avalia agentes interativamente pela interface web.
-- `Programmatically (pytest)`: integra avaliacoes ao pipeline de testes usando
-  `pytest` e arquivos de teste.
-- `Command Line Interface (adk eval)`: executa avaliacoes diretamente pelo
-  terminal usando um arquivo de conjunto de avaliacao existente.
+- `Programmatically (pytest)`: integra avaliações ao pipeline de testes usando `pytest` e arquivos de teste.
+- `Command Line Interface (adk eval)`: executa avaliações diretamente pelo terminal usando um conjunto de avaliação existente.
 
-Exemplo programatico com `pytest`:
+Exemplo programático com `pytest`:
 
 ```python
 from google.adk.evaluation.agent_evaluator import AgentEvaluator
 
 
 def test_with_single_test_file():
-    """Testa a habilidade basica do agente usando um arquivo de sessao."""
+    """Testa a habilidade básica do agente usando um arquivo de sessão."""
     AgentEvaluator.evaluate(
         "tests.integration.fixture.home_automation_agent",
         "tests/integration/fixture/home_automation_agent/simple_test.test.json",
     )
 ```
 
-Nesse formato, o teste chama `AgentEvaluator.evaluate(...)`, informa o modulo do
-agente e aponta para um arquivo `.test.json` que representa uma interacao de
-avaliacao.
-
 Exemplo pela linha de comando:
 
 ```bash
-adk eval my_google_search_agent/__init__.py caminho/para/test.evalset.json
+adk eval my_google_search_agent caminho/para/test.evalset.json
 ```
 
-## 11. Avaliacao da Resposta Final
+## 11. Avaliação da Resposta Final
 
-Na etapa de avaliacao, o ADK compara a resposta gerada pelo agente com uma
-resposta de referencia definida no dataset de avaliacao.
+Na etapa de avaliação, o ADK compara a resposta gerada pelo agente com uma resposta de referência definida no conjunto de avaliação.
 
-A metrica `response_match_score` indica o quanto a resposta do agente corresponde
-a resposta esperada. O teste passa quando o score atinge o valor minimo
-configurado e falha quando fica abaixo desse limite.
+A métrica `response_match_score` indica o quanto a resposta do agente corresponde à resposta esperada. O teste passa quando o score atinge o valor mínimo configurado e falha quando fica abaixo desse limite.
 
-## 12. Avaliacao de Trajetoria e Uso de Ferramentas
+## 12. Avaliação de Trajetória e Uso de Ferramentas
 
-O ADK tambem pode avaliar a trajetoria executada pelo agente, comparando valores
-esperados com valores reais das etapas realizadas durante a execucao.
+O ADK também pode avaliar a trajetória executada pelo agente, comparando valores esperados com valores reais das etapas realizadas durante a execução.
 
-Essa avaliacao pode verificar se o agente seguiu corretamente etapas como:
+Essa avaliação pode verificar se o agente seguiu corretamente etapas como:
 
 - `determine_intent`
 - `use_tool`
 - `review_results`
 - `report_generation`
 
-A metrica `tool_trajectory_avg_score` representa o quanto a trajetoria real do
-agente corresponde a trajetoria esperada. O teste passa quando esse score atinge
-o valor minimo configurado e falha quando fica abaixo desse limite.
+A métrica `tool_trajectory_avg_score` representa o quanto a trajetória real do agente corresponde à trajetória esperada. O teste passa quando esse score atinge o valor mínimo configurado e falha quando fica abaixo desse limite.
 
-Tipos comuns de avaliacao de trajetoria:
+Tipos comuns de avaliação de trajetória:
 
-- `Exact match`: exige uma correspondencia perfeita com a trajetoria ideal.
-- `In-order match`: exige as acoes corretas na ordem correta, permitindo acoes
-  extras.
-- `Any-order match`: exige as acoes corretas em qualquer ordem, permitindo
-  acoes extras.
-- `Precision`: mede a relevancia e a corretude das acoes previstas.
-- `Recall`: mede quantas acoes essenciais foram capturadas na previsao.
-- `Single-tool use`: verifica se uma acao ou ferramenta especifica foi usada.
+- `Exact match`: exige uma correspondência perfeita com a trajetória ideal.
+- `In-order match`: exige as ações corretas na ordem correta, permitindo ações extras.
+- `Any-order match`: exige as ações corretas em qualquer ordem, permitindo ações extras.
+- `Precision`: mede a relevância e a correção das ações previstas.
+- `Recall`: mede quantas ações essenciais foram capturadas na previsão.
+- `Single-tool use`: verifica se uma ação ou ferramenta específica foi usada.
 
-## 13. Finalizacao
+## 13. Finalização
 
 Depois de completar os passos:
 
 1. Volte para o Qwiklabs.
 2. Clique em `Check my progress`.
 
-## Observacoes
+## Observações
 
 - Cada pasta de agente precisa ter `__init__.py` e `agent.py`.
 - O ADK procura um objeto chamado `root_agent` dentro de `agent.py`.
-- Se ocorrer erro de importacao, confirme se voce esta executando o comando a
-  partir da raiz correta do projeto.
+- Se ocorrer erro de importação, confirme se você está executando o comando a partir da raiz correta do projeto.
 - Para rodar dentro de `adk_project`, use `cd ~/google-adk-project/adk_project`.
-- Para rodar a copia da raiz, use `cd ~/google-adk-project`.
+- Se usar as cópias da raiz, execute os comandos a partir de `~/google-adk-project`.
